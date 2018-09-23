@@ -34,19 +34,21 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     Camera camera;
     SurfaceView surfaceView,transparentView;
     SurfaceHolder surfaceHolder,transparentHolder;
-    Button capture;
+    Button capture,btnLogout;
     Camera.PictureCallback rawCallback;
     Camera.ShutterCallback shutterCallback;
     Camera.PictureCallback jpegCallback;
+    SessionHandler sharedP;
     private float RectLeft, RectTop,RectRight,RectBottom ;
     int  deviceHeight,deviceWidth;
-
+    private static  final int FOCUS_AREA_SIZE= 300;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        sharedP = new SessionHandler(getApplicationContext());
+        btnLogout = findViewById(R.id.btnLogout);
         capture = findViewById(R.id.button2);
-
         surfaceView = findViewById(R.id.surfaceView3);
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
@@ -62,6 +64,23 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         deviceWidth=getScreenWidth();
         deviceHeight=getScreenHeight();
 
+        storageStuff();
+
+        btnLogout.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v){
+                sharedP.logoutUser();
+                Intent i = new Intent(MainActivity.this, Login.class);
+                startActivity(i);
+                finish();
+            }
+        });
+
+
+
+    }
+    public void storageStuff(){
         String storage = Environment.DIRECTORY_PICTURES;
         final File root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"Camera");
 
@@ -92,8 +111,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 sendBroadcast(mediaScanIntent);
             }
         };
-
-
     }
     public static int getScreenWidth() {
 
@@ -191,4 +208,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
        }
        camera = null;
     }
+
+
 }

@@ -1,5 +1,6 @@
 package com.example.user.cameraloo;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
@@ -33,30 +34,42 @@ public class Login extends AppCompatActivity {
     Button btnSignIn, btnRegister;
 
     String URL= "http://192.168.43.244/TestLoginSaja2/index.php";
+    SessionHandler sharedP;
 
     JSONParser jsonParser=new JSONParser();
-
+    String name = "";
+    String pwd = "";
+    String email = "";
     int i=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+
+       super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        sharedP = new SessionHandler(getApplicationContext());
         editEmail=findViewById(R.id.editEmail);
         editName=findViewById(R.id.editName);
         editPassword=findViewById(R.id.editPassword);
-
         btnSignIn=findViewById(R.id.btnSignIn);
         btnRegister=findViewById(R.id.btnRegister);
+
+        if(sharedP.isLoggedIn()){
+            displayMain();
+        }
+
 
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                name = editName.getText().toString();
+                pwd = editPassword.getText().toString();
+
                 AttemptLogin attemptLogin= new AttemptLogin();
-                attemptLogin.execute(editName.getText().toString(),editPassword.getText().toString(),"");
-                Log.d("input utk login",editName.getText().toString());
-                Log.d("input utk login",editPassword.getText().toString());
-                Log.d("input utk login",editEmail.getText().toString());
+                attemptLogin.execute(name, pwd,"");
+                Log.d("input utk reg",name);
+                Log.d("input utk reg",pwd);
+
             }
         });
 
@@ -77,12 +90,14 @@ public class Login extends AppCompatActivity {
                     editEmail.setVisibility(View.GONE);
                     btnSignIn.setVisibility(View.VISIBLE);
                     i=0;
-
+                    name = editName.getText().toString();
+                    pwd = editPassword.getText().toString();
+                    email = editEmail.getText().toString();
                     AttemptLogin attemptLogin= new AttemptLogin();
-                    attemptLogin.execute(editName.getText().toString(),editPassword.getText().toString(),editEmail.getText().toString());
-                    Log.d("input utk reg",editName.getText().toString());
-                    Log.d("input utk reg",editPassword.getText().toString());
-                    Log.d("input utk reg",editEmail.getText().toString());
+                    attemptLogin.execute(name, pwd,email);
+                    Log.d("input utk reg",name);
+                    Log.d("input utk reg",pwd);
+                    Log.d("input utk reg",email);
 
 
 
@@ -146,18 +161,26 @@ public class Login extends AppCompatActivity {
             afterLogin(result);
 
         }
-        protected void afterLogin(JSONObject result){
-            try {
-                if (result.getString("success").equals("1")) {
-                    Intent mainPage = new Intent(Login.this,MainActivity.class);
-                    mainPage.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(mainPage);
-                    finish();
-                }
-            }catch (Exception e){
 
+
+    }
+    protected void afterLogin(JSONObject result){
+        Log.d("afterLogin","hubu asdawd");
+        try {
+            if (result.getString("success").equals("1")) {
+                name = editName.getText().toString();
+                sharedP.loginUser(name);
+                displayMain();
             }
-        }
+        }catch (Exception e){
 
+        }
+    }
+    protected void displayMain(){
+        Log.d("displayMain","huhu");
+        Intent mainPage = new Intent(Login.this,MainActivity.class);
+        mainPage.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(mainPage);
+        finish();
     }
 }

@@ -15,6 +15,7 @@ import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -26,7 +27,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static android.os.Environment.getExternalStoragePublicDirectory;
 
@@ -77,49 +80,60 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             }
         });
 
-
+        surfaceView.setOnTouchListener(new View.OnTouchListener(){
+            @Override
+            public boolean onTouch(View v, MotionEvent event){
+                if(event.getAction()==MotionEvent.ACTION_DOWN){
+                    focusOnTouch(event);
+                }
+                return true;
+            }
+        });
 
     }
     public void storageStuff(){
-        String storage = Environment.DIRECTORY_PICTURES;
-        final File root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"Camera");
 
-        final File myDir = new File(root ,"OMR");
-        if (!myDir.exists()){
-            myDir.mkdirs();
-        }
-        final String nStorage = myDir.toString();
         jpegCallback = new Camera.PictureCallback() {
             @SuppressLint("WrongConstant")
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
                 FileOutputStream out = null;
+                File file_image = getDir();
+                if (!file_image.exists()&& !file_image.mkdirs()){
+                    Toast.makeText(getApplicationContext(),"Dir error",Toast.LENGTH_SHORT).show();
+                }
+                String timestamp = Long.toString(System.currentTimeMillis());
+                String imagename = "OMR_"+timestamp+".jpg";
+                String file_name = file_image.getAbsolutePath()+"/"+imagename;
+                File picfile = new File(file_name);
                 try {
-                    out = new FileOutputStream(String.format(myDir+"%d.jpg",System.currentTimeMillis()));
-
+                    out = new FileOutputStream(picfile);
                     out.write(data);
-                    Log.d("capture photo",myDir.toString());
+                    Log.d("capture photo",file_name.toString());
                     Toast.makeText(getApplicationContext(),"Picture Saved",2000).show();
                 }catch (FileNotFoundException fe){
                     Log.d("capture photo","error file not found");
                 }catch (IOException e){
                 }
                 refreshCamera();
-                Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                Uri contentUri = Uri.fromFile(myDir);
-                mediaScanIntent.setData(contentUri);
-                sendBroadcast(mediaScanIntent);
+                refreshGallery(picfile);
             }
         };
+    }
+    public File getDir(){
+        File dest = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        return new File(dest,"OMR");
+    }
+    public void refreshGallery(File file){
+        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        intent.setData(Uri.fromFile(file));
+        sendBroadcast(intent);
     }
     public static int getScreenWidth() {
 
         return Resources.getSystem().getDisplayMetrics().widthPixels;
 
     }
-
-
-
     public static int getScreenHeight() {
 
         return Resources.getSystem().getDisplayMetrics().heightPixels;
@@ -133,12 +147,21 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(Color.GREEN);
         paint.setStrokeWidth(3);
-        RectLeft = 100;
-        RectTop = 200;
-        RectRight = deviceWidth - 100;
-        RectBottom =RectTop+ 550;
-        Rect rec = new Rect((int)RectLeft,(int)RectTop,(int)RectRight,(int)RectBottom);
-        canvas.drawRect(rec,paint);
+        RectTop = 50;
+        RectLeft = 90;
+        RectRight = deviceWidth - 90;
+        Rect rec = new Rect();
+        int i = 0;
+        while(i<15){
+
+            RectBottom =RectTop+ 50;
+
+            rec = new Rect((int)RectLeft,(int)RectTop,(int)RectRight,(int)RectBottom);
+            canvas.drawRect(rec,paint);
+            Log.d("Draw",Integer.toString(i));
+            RectTop = RectBottom; //now bottom is top for another box
+            i++;
+        }
         transparentHolder.unlockCanvasAndPost(canvas);
     }
 
@@ -208,6 +231,58 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
        }
        camera = null;
     }
+    private void focusOnTouch(MotionEvent event) {
+        if (camera != null ) {
+
+            Camera.Parameters parameters = camera.getParameters();
+            if (parameters.getMaxNumMeteringAreas() > 0){
+                Log.d("focusOnTouch","fancy !");
+                Rect rect = calculateFocusArea(event.getX(), event.getY());
+
+                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+                List<Camera.Area> meteringAreas = new ArrayList<Camera.Area>();
+                meteringAreas.add(new Camera.Area(rect, 800));
+                parameters.setFocusAreas(meteringAreas);
+
+                camera.setParameters(parameters);
+                camera.autoFocus(mAutoFocusTakePictureCallback);
+            }else {
+                camera.autoFocus(mAutoFocusTakePictureCallback);
+            }
+        }
+    }
+    private Rect calculateFocusArea(float x, float y) {
+        int left = clamp(Float.valueOf((x / surfaceView.getWidth()) * 2000 - 1000).intValue(), FOCUS_AREA_SIZE);
+        int top = clamp(Float.valueOf((y / surfaceView.getHeight()) * 2000 - 1000).intValue(), FOCUS_AREA_SIZE);
+
+        return new Rect(left, top, left + FOCUS_AREA_SIZE, top + FOCUS_AREA_SIZE);
+    }
+    private int clamp(int touchCoordinateInCameraReper, int focusAreaSize) {
+        int result;
+        if (Math.abs(touchCoordinateInCameraReper)+focusAreaSize/2>1000){
+            if (touchCoordinateInCameraReper>0){
+                result = 1000 - focusAreaSize/2;
+            } else {
+                result = -1000 + focusAreaSize/2;
+            }
+        } else{
+            result = touchCoordinateInCameraReper - focusAreaSize/2;
+        }
+        return result;
+    }
+    private Camera.AutoFocusCallback mAutoFocusTakePictureCallback = new Camera.AutoFocusCallback() {
+        @Override
+        public void onAutoFocus(boolean success, Camera camera) {
+            if (success) {
+                // do something...
+                Log.d("tap_to_focus","success!");
+            } else {
+                // do something...
+                Log.d("tap_to_focus","fail!");
+            }
+        }
+    };
+
 
 
 }

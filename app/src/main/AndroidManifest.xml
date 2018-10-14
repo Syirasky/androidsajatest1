@@ -28,7 +28,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ViewCaptured"></activity>
+        <activity android:name=".ViewCaptured" />
+        <activity android:name=".ViewImage"></activity>
     </application>
 
 </manifest>

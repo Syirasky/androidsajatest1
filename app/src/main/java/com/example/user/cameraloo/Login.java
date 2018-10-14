@@ -165,7 +165,7 @@ public class Login extends AppCompatActivity {
 
     }
     protected void afterLogin(JSONObject result){
-        Log.d("afterLogin","hubu asdawd");
+       // Log.d("afterLogin","hubu asdawd");
         try {
             if (result.getString("success").equals("1")) {
                 name = editName.getText().toString();
@@ -177,7 +177,7 @@ public class Login extends AppCompatActivity {
         }
     }
     protected void displayMain(){
-        Log.d("displayMain","huhu");
+        //Log.d("displayMain","huhu");
         Intent mainPage = new Intent(Login.this,MainActivity.class);
         mainPage.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(mainPage);

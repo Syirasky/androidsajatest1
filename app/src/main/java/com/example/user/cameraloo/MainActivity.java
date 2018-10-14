@@ -3,6 +3,8 @@ package com.example.user.cameraloo;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -26,6 +28,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,13 +40,14 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     Camera camera;
     SurfaceView surfaceView,transparentView;
     SurfaceHolder surfaceHolder,transparentHolder;
-    Button capture,btnLogout;
+    Button capture,btnLogout,btnViewImg;
     Camera.PictureCallback rawCallback;
     Camera.ShutterCallback shutterCallback;
     Camera.PictureCallback jpegCallback;
     SessionHandler sharedP;
     private float RectLeft, RectTop,RectRight,RectBottom ;
     int  deviceHeight,deviceWidth;
+    int activity_viewimg_code = 2;
     private static  final int FOCUS_AREA_SIZE= 300;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +56,11 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         sharedP = new SessionHandler(getApplicationContext());
         btnLogout = findViewById(R.id.btnLogout);
         capture = findViewById(R.id.button2);
+        btnViewImg = findViewById(R.id.btnViewImg);
         surfaceView = findViewById(R.id.surfaceView3);
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
+
         //surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         surfaceView.setSecure(true);
 
@@ -79,6 +85,14 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 finish();
             }
         });
+        btnViewImg.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v){
+                Intent i = new Intent(MainActivity.this, ViewImage.class);
+                startActivity(i);
+            }
+        });
 
         surfaceView.setOnTouchListener(new View.OnTouchListener(){
             @Override
@@ -90,35 +104,73 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             }
         });
 
+
+
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        // check if the request code is same as what is passed  here it is 2
+        if(requestCode==2)
+        {
+
+        }
+    }
+
+
+
+
     public void storageStuff(){
 
         jpegCallback = new Camera.PictureCallback() {
             @SuppressLint("WrongConstant")
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
-                FileOutputStream out = null;
-                File file_image = getDir();
-                if (!file_image.exists()&& !file_image.mkdirs()){
-                    Toast.makeText(getApplicationContext(),"Dir error",Toast.LENGTH_SHORT).show();
-                }
-                String timestamp = Long.toString(System.currentTimeMillis());
-                String imagename = "OMR_"+timestamp+".jpg";
-                String file_name = file_image.getAbsolutePath()+"/"+imagename;
-                File picfile = new File(file_name);
-                try {
-                    out = new FileOutputStream(picfile);
-                    out.write(data);
-                    Log.d("capture photo",file_name.toString());
-                    Toast.makeText(getApplicationContext(),"Picture Saved",2000).show();
-                }catch (FileNotFoundException fe){
-                    Log.d("capture photo","error file not found");
-                }catch (IOException e){
-                }
+
+
+                File a = saveImage(data);
+                ///storage/emulated/0/Pictures/OMR/OMR_1539395350101.jpg cth picfile
+
+
+                Uri uripic = Uri.fromFile(a);
+                Log.d("uriPic",uripic.toString());
+                viewImage(uripic);
+
                 refreshCamera();
-                refreshGallery(picfile);
+                refreshGallery(a);
             }
         };
+    }
+    public File saveImage(byte[] data){
+        String timestamp = Long.toString(System.currentTimeMillis());
+        String imagename = "OMR_"+timestamp+".jpg";
+
+        File file_image = getDir();
+        if (!file_image.exists()&& !file_image.mkdirs()){
+            Toast.makeText(getApplicationContext(),"Dir error",Toast.LENGTH_SHORT).show();
+        }
+
+
+        String file_name = file_image.getAbsolutePath()+"/"+imagename;
+        File picfile = new File(file_name);
+        try{
+            FileOutputStream out = null;
+            out = new FileOutputStream(picfile);
+            out.write(data);
+            Toast.makeText(getApplicationContext(),"Picture Saved",Toast.LENGTH_LONG).show();
+        }catch (FileNotFoundException fe){
+            Log.d("capture photo","error file not found");
+        }catch (IOException e){
+        }
+        return picfile;
+    }
+
+    public void viewImage(Uri uri){
+        Intent viewcaptured = new Intent(MainActivity.this,ViewCaptured.class);
+        viewcaptured.putExtra("uri",uri.toString());
+        startActivityForResult(viewcaptured,activity_viewimg_code);
+
     }
     public File getDir(){
         File dest = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
@@ -147,12 +199,13 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(Color.GREEN);
         paint.setStrokeWidth(3);
-        RectTop = 50;
+        Bitmap guiderect = BitmapFactory.decodeResource(getResources(),R.drawable.guidepls3);
+        RectTop = 20;
         RectLeft = 90;
         RectRight = deviceWidth - 90;
         Rect rec = new Rect();
         int i = 0;
-        while(i<15){
+        /**while(i<15){
 
             RectBottom =RectTop+ 50;
 
@@ -161,7 +214,12 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             Log.d("Draw",Integer.toString(i));
             RectTop = RectBottom; //now bottom is top for another box
             i++;
-        }
+        }**/
+        Log.d("sizescw","hehe");
+        Log.d("hehe",Integer.toString(deviceWidth));
+        Log.d("hehe",Integer.toString(deviceHeight));
+
+        canvas.drawBitmap(guiderect,100,50,null);
         transparentHolder.unlockCanvasAndPost(canvas);
     }
 

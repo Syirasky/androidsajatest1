@@ -40,4 +40,8 @@ dependencies {
     implementation files('libs/httpcore-4.3.3.jar')
     implementation files('libs/httpmime-4.3.3.jar')
     implementation files('libs/httpclient-4.3.3.jar')
+    annotationProcessor 'com.google.auto.value:auto-value:1.4'
+    annotationProcessor 'com.ryanharter.auto.value:auto-value-parcel:0.2.5'
+    provided 'com.jakewharton.auto.value:auto-value-annotations:1.4'
 }
+

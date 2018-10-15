@@ -1,8 +1,10 @@
 package com.example.user.cameraloo;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -27,12 +29,34 @@ public class ViewImage extends AppCompatActivity {
             "Android ListView Short Description", "Android ListView Short Description", "Android ListView Short Description", "Android ListView Short Description",
             "Android ListView Short Description", "Android ListView Short Description", "Android ListView Short Description", "Android ListView Short Description",
     };
-
+    String examcode,uri,studentID;
+    ArrayList<Image> imgobj;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_image);
+        imgobj = new ArrayList<>();
+        Intent _intent =  getIntent();
+        Bundle datass = _intent.getBundleExtra("objass");
 
+
+        if (!datass.isEmpty()) {
+            imgobj = datass.getParcelableArrayList("obj");
+            if (!imgobj.isEmpty()) {
+                Image im = new Image();
+                Image im2 = new Image();
+                if (imgobj.size()>0) {
+                    im = imgobj.get(0);
+                    im2 = imgobj.get(1);
+                }
+                Log.d("321", im.getUri()+im2.getUri());
+            }else {
+                Log.d("321", "failed hu");
+            }
+        }else
+        {
+            Log.d("3211","damnnedd");
+        }
         List<HashMap<String, String>> aList = new ArrayList<HashMap<String, String>>();
 
         for (int i = 0; i < 8; i++) {

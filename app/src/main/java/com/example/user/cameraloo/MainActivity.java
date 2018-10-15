@@ -14,6 +14,7 @@ import android.hardware.Camera;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Parcel;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -48,7 +49,11 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private float RectLeft, RectTop,RectRight,RectBottom ;
     int  deviceHeight,deviceWidth;
     int activity_viewimg_code = 2;
+    String studentID,uri;
     private static  final int FOCUS_AREA_SIZE= 300;
+    ImageInfo imginfo ;
+    Image img;
+    ArrayList<Image> a;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +65,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         surfaceView = findViewById(R.id.surfaceView3);
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
-
+        img = new Image();
+        a = new ArrayList<>();
         //surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         surfaceView.setSecure(true);
 
@@ -89,8 +95,21 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         {
             @Override
             public void onClick(View v){
+
                 Intent i = new Intent(MainActivity.this, ViewImage.class);
+                Bundle datass = new Bundle();
+
+                datass.putParcelableArrayList("obj",getArrayTu());
+                i.putExtra("objass",datass);
                 startActivity(i);
+
+                if (!a.isEmpty()) {
+                    Log.d("123", img.getStudentID());
+                }
+                else {
+                    Log.d("1234", "failed");
+
+                }
             }
         });
 
@@ -112,14 +131,28 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     {
         super.onActivityResult(requestCode, resultCode, data);
         // check if the request code is same as what is passed  here it is 2
-        if(requestCode==2)
+        if(requestCode==activity_viewimg_code)
         {
-
+            if(resultCode==RESULT_OK) {
+                studentID = data.getStringExtra("studentID");
+                uri = data.getStringExtra("uri");
+                Log.d("studentID", studentID);
+                img.setUri(uri);
+                img.setStudentID(studentID);
+                img.setExamcode("test");
+                addIntoArray(img);
+            }
         }
     }
 
 
+    public void addIntoArray(Image im){
 
+        a.add(im);
+    }
+    public ArrayList<Image> getArrayTu(){
+        return a;
+    }
 
     public void storageStuff(){
 
@@ -127,6 +160,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             @SuppressLint("WrongConstant")
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
+
 
 
                 File a = saveImage(data);

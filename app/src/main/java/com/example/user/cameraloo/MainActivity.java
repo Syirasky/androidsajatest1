@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     Camera.ShutterCallback shutterCallback;
     Camera.PictureCallback jpegCallback;
     SessionHandler sharedP;
+    ImageDB imghelper;
     private float RectLeft, RectTop,RectRight,RectBottom ;
     int  deviceHeight,deviceWidth;
     int activity_viewimg_code = 2;
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         surfaceView = findViewById(R.id.surfaceView3);
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
+        imghelper = new ImageDB(this);
         img = new Image();
         a = new ArrayList<>();
         //surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -96,18 +98,22 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             @Override
             public void onClick(View v){
 
-                Intent i = new Intent(MainActivity.this, ViewImage.class);
-                Bundle datass = new Bundle();
+                Intent i = new Intent(MainActivity.this, ShowListView.class);
+               // Bundle datass = new Bundle();
 
-                datass.putParcelableArrayList("obj",getArrayTu());
-                i.putExtra("objass",datass);
+                    //datass.putParcelableArrayList("obj",getArrayTu());
+                    //i.putExtra("objass",datass);
+
+               // datass.putString("Uri",img.getUri());
+            //    datass.putString("StudentID",img.getStudentID());
+            //    i.putExtras(datass);
                 startActivity(i);
 
                 if (!a.isEmpty()) {
-                    Log.d("123", img.getStudentID());
+                    Log.d("321", img.getStudentID());
                 }
                 else {
-                    Log.d("1234", "failed");
+                    Log.d("3214", "failed");
 
                 }
             }
@@ -140,19 +146,12 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 img.setUri(uri);
                 img.setStudentID(studentID);
                 img.setExamcode("test");
-                addIntoArray(img);
+                imghelper.addImg(img);
+                Log.d("321","database count"+ imghelper.numberOfRows());
             }
         }
     }
 
-
-    public void addIntoArray(Image im){
-
-        a.add(im);
-    }
-    public ArrayList<Image> getArrayTu(){
-        return a;
-    }
 
     public void storageStuff(){
 

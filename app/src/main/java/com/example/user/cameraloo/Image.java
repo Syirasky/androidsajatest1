@@ -13,6 +13,11 @@ public class Image implements Parcelable{
         uri = "";
         studentID = "";
     }
+    public Image(String e,String st,String u){
+        examcode = e;
+        studentID = st;
+        uri = u;
+    }
     protected Image(Parcel in) {
         setExamcode(in.readString());
         setUri(in.readString());

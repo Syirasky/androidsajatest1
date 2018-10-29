@@ -43,12 +43,7 @@ public class ViewCaptured extends AppCompatActivity {
 
 
     }
-    public void confirm(){//save to list then return result to list in main then return to main activity
 
-    }
-    public void reject(){//return to main
-
-    }
 
 
 

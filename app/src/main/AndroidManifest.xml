@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.user.cameraloo">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -29,7 +30,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ViewCaptured" />
-        <activity android:name=".ViewImage"></activity>
+        <activity android:name=".ShowListView"></activity>
     </application>
 
 </manifest>

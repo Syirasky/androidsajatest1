@@ -30,7 +30,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ViewCaptured" />
-        <activity android:name=".ShowListView"></activity>
+        <activity android:name=".ShowListView" />
+        <activity android:name=".Edit"></activity>
     </application>
 
 </manifest>

@@ -48,7 +48,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ShowListView extends AppCompatActivity {
+public class ShowListView extends AppCompatActivity{
     private ArrayList<Image> images,resultss;
     private ArrayList<Uri>  urionly;
     private ImageAdapter imageAdapter;
@@ -94,6 +94,9 @@ public class ShowListView extends AppCompatActivity {
             imageAdapter = new ImageAdapter(this, images);
             listView = (ListView) findViewById(R.id.main_list_view);
             listView.setAdapter(imageAdapter);
+        }else
+        {
+            Toast.makeText(getApplicationContext(),"No image found. Please take picture first.",Toast.LENGTH_SHORT);
         }
         btnUpload = findViewById(R.id.btnUpload);
         btnUpload.setOnClickListener(new View.OnClickListener() {
@@ -204,43 +207,7 @@ public class ShowListView extends AppCompatActivity {
     /**
      *  Runtime Permission
      */
-    private boolean askForPermission() {
-        int currentAPIVersion = Build.VERSION.SDK_INT;
-        if (currentAPIVersion >= Build.VERSION_CODES.M) {
-            int hasCallPermission = ContextCompat.checkSelfPermission(ShowListView.this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE);
-            if (hasCallPermission != PackageManager.PERMISSION_GRANTED) {
-                // Ask for permission
-                // need to request permission
-                if (ActivityCompat.shouldShowRequestPermissionRationale(ShowListView.this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    // explain
-                    showMessageOKCancel(
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    ActivityCompat.requestPermissions(ShowListView.this,
-                                            new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
-                                            REQUEST_CODE_ASK_PERMISSIONS);
-                                }
-                            });
-                    // if denied then working here
-                } else {
-                    // Request for permission
-                    ActivityCompat.requestPermissions(ShowListView.this,
-                            new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
-                            REQUEST_CODE_ASK_PERMISSIONS);
-                }
 
-                return false;
-            } else {
-                // permission granted and calling function working
-                return true;
-            }
-        } else {
-            return true;
-        }
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

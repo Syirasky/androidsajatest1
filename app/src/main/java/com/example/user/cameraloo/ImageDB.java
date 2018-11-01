@@ -51,16 +51,28 @@ public class ImageDB extends  SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
     // code to get the single contact
-    Image getImage(String exam_c) {
+    Image getImage(String uri) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE, new String[] { image_uri, student_id, exam_code }, image_uri + "=?", new String[] { String.valueOf(exam_c) }, null, null, null, null);
+        Cursor cursor = db.query(TABLE, new String[] { image_uri, student_id, exam_code }, image_uri + "=?", new String[] { uri }, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
         Image img = new Image(cursor.getString(0),cursor.getString(1), cursor.getString(2));
         // return contact
         return img;
+    }
+    public Image getSingle(String uri){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM image WHERE image_uri = ? ", new String[] {uri});
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        Image img = new Image(cursor.getString(0),cursor.getString(1), cursor.getString(2));
+        // return contact
+        return img;
+
     }
     public int numberOfRows(){
         SQLiteDatabase db = this.getReadableDatabase();
@@ -69,8 +81,7 @@ public class ImageDB extends  SQLiteOpenHelper {
     }
     public Integer deleteImage (String id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete("image",
-                "image_uri = ? ", new String[] { id });
+        return db.delete(TABLE, "image_uri = ? ", new String[] { id });
     }
     // code to update the single contact
     public int updateImage(Image img) {
@@ -84,6 +95,17 @@ public class ImageDB extends  SQLiteOpenHelper {
         return db.update(TABLE, values, image_uri + " = ?",
                 new String[] { String.valueOf(img.getUri()) });
     }
+    public int updateStudentID(String stud_id,String uri){
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put(student_id,stud_id);
+
+        return db.update(TABLE, cv, image_uri+"= ?", new String[]{String.valueOf(uri)});
+    }
+
+
     // code to get all contacts in a list view
     public ArrayList<Image> getAllImages() {
         ArrayList<Image> imageList = new ArrayList<Image>();
@@ -113,7 +135,7 @@ public class ImageDB extends  SQLiteOpenHelper {
         ArrayList<Image> imageList = new ArrayList<Image>();
         ArrayList<Uri> imguri = new ArrayList<>();
         // Select All Query
-        String selectQuery = "SELECT image_uri FROM " + TABLE;
+        String selectQuery = "SELECT image_uri FROM " + TABLE ;
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -132,6 +154,7 @@ public class ImageDB extends  SQLiteOpenHelper {
         // return contact list
         return imguri;
     }
+
 
 
 

@@ -33,7 +33,7 @@ public class Login extends AppCompatActivity {
     EditText editEmail, editPassword, editName;
     Button btnSignIn, btnRegister;
 
-    String URL= "http://192.168.43.244/TestLoginSaja2/index.php";
+    String URL= "http://3.0.101.196/SimpleLoginUpload/index.php";
     SessionHandler sharedP;
 
     JSONParser jsonParser=new JSONParser();
@@ -178,7 +178,7 @@ public class Login extends AppCompatActivity {
     }
     protected void displayMain(){
         //Log.d("displayMain","huhu");
-        Intent mainPage = new Intent(Login.this,MainActivity.class);
+        Intent mainPage = new Intent(Login.this,MainForAll.class);
         mainPage.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(mainPage);
         finish();

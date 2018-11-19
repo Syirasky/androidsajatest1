@@ -1,22 +1,39 @@
 package com.example.user.cameraloo;
-
+import com.google.gson.annotations.SerializedName;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+
+
 public class Image implements Parcelable{
+    @SerializedName("examcode")
     private String examcode;
+    @SerializedName("uri")
     private String uri;
+    @SerializedName("studentID")
     private String studentID;
+    @SerializedName("subject_id")
+    private String subject_id;
+    @SerializedName("answer")
+    private String answer;
+    @SerializedName("score")
+    private String score;
 
     public Image(){
         examcode="";
         uri = "";
         studentID = "";
+        setSubject_id("");
+        answer = "";
+        score = "";
     }
-    public Image(String e,String st,String u){
+    public Image(String e,String st,String u,String si,String a,String sc){
         examcode = e;
         studentID = st;
         uri = u;
+        setSubject_id(si);
+        answer = a;
+        score = sc;
     }
     protected Image(Parcel in) {
         setExamcode(in.readString());
@@ -70,5 +87,29 @@ public class Image implements Parcelable{
 
     public void setStudentID(String studentID) {
         this.studentID = studentID;
+    }
+
+    public String getSubject_id() {
+        return subject_id;
+    }
+
+    public void setSubject_id(String subject_id) {
+        this.subject_id = subject_id;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
+
+    public String getScore() {
+        return score;
+    }
+
+    public void setScore(String score) {
+        this.score = score;
     }
 }

@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private float RectLeft, RectTop,RectRight,RectBottom ;
     int  deviceHeight,deviceWidth;
     int activity_viewimg_code = 2;
-    String studentID,uri;
+    String studentID,uri,SubjectId,Examcode,answer,score;
     private static  final int FOCUS_AREA_SIZE= 300;
     ImageInfo imginfo ;
     Image img;
@@ -59,6 +59,12 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Intent b = getIntent();
+        SubjectId = b.getStringExtra("subjectID");
+        Examcode = b.getStringExtra("examcode");
+        answer = b.getStringExtra("answer");
+
         sharedP = new SessionHandler(getApplicationContext());
         btnLogout = findViewById(R.id.btnLogout);
         capture = findViewById(R.id.button2);
@@ -66,12 +72,14 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         surfaceView = findViewById(R.id.surfaceView3);
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
+
         imghelper = new ImageDB(this);
         img = new Image();
+
         a = new ArrayList<>();
         //surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         surfaceView.setSecure(true);
-
+        Log.d("EnterExamInfo",SubjectId+" "+Examcode+" "+answer);
         transparentView = (SurfaceView) findViewById(R.id.surfaceView2);
         transparentHolder = transparentView.getHolder();
         transparentHolder.addCallback(this);
@@ -99,6 +107,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             public void onClick(View v){
 
                 Intent i = new Intent(MainActivity.this, ShowListView.class);
+                i.putExtra("subjectID",SubjectId);
+                i.putExtra("examcode",Examcode);
                // Bundle datass = new Bundle();
 
                     //datass.putParcelableArrayList("obj",getArrayTu());
@@ -145,7 +155,10 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 Log.d("studentID", studentID);
                 img.setUri(uri);
                 img.setStudentID(studentID);
-                img.setExamcode("test");
+                img.setExamcode(Examcode);
+                img.setSubject_id(SubjectId);
+                img.setAnswer(answer);
+                //score belum set
                 imghelper.addImg(img);
                 Log.d("321","database count"+ imghelper.numberOfRows());
             }
@@ -296,6 +309,20 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         param.setPreviewSize(352,288);
         param.setRotation(90);
         param.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        List<Camera.Size> sizes = param.getSupportedPictureSizes();
+
+
+        // Iterate through all available resolutions and choose one.
+        // The chosen resolution will be stored in mSize.
+       /* Camera.Size mSize = null;
+        for (Camera.Size size : sizes) {
+            Log.d("testcamera", "Available resolution: "+size.width+" "+size.height);
+            mSize = size;
+        }
+        Log.d("testcamera", "Chosen resolution: "+mSize.width+" "+mSize.height);
+        */
+        param.setPictureSize(1024,768);
+        //param.setColorEffect(android.hardware.Camera.Parameters.EFFECT_MONO);
         camera.setDisplayOrientation(90);
         camera.setParameters(param);
 

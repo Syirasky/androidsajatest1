@@ -10,6 +10,7 @@ import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.ListView;
 
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.ArrayList;
 import android.Manifest;
@@ -33,6 +34,13 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +56,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.example.user.cameraloo.JSONParser.json;
+
 public class ShowListView extends AppCompatActivity{
     private ArrayList<Image> images,resultss;
     private ArrayList<Uri>  urionly;
@@ -55,8 +65,8 @@ public class ShowListView extends AppCompatActivity{
     private ListView listView;
     private Uri mCapturedImageURI;
     private static final int RESULT_LOAD_IMAGE = 1;
-    private String studID;
-    private String uri;
+    private String subjectID;
+    private String examcode;
     private ImageDB imghelper;
     private ProgressBar mProgressBar;
     private Button btnUpload;
@@ -69,23 +79,30 @@ public class ShowListView extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_list_view);
+
+        File chkfile = null;
         int i = 0;
-        images = new ArrayList<Image>();
-        resultss = new ArrayList<Image>();
-        Intent _intent =  getIntent();
-        imghelper = new ImageDB(this);
         mProgressBar = findViewById(R.id.progressBar);
         parentView = findViewById(R.id.parent_layout);
+        btnUpload = findViewById(R.id.btnUpload);
+
+        images = new ArrayList<Image>();
+        resultss = new ArrayList<Image>();
+
+        Intent _intent =  getIntent();
+        subjectID = _intent.getStringExtra("subjectID");
+        examcode = _intent.getStringExtra("examcode");
+        imghelper = new ImageDB(this);
+
         Image im = new Image();
-        resultss = imghelper.getAllImages();
-        File chkfile = null;
+        resultss = imghelper.getAllRelatedImages(subjectID,examcode);
+
         for ( i = 0;i<resultss.size();i++){
             im = resultss.get(i);
             chkfile = new File(URI.create(im.getUri()).getPath());
             if (chkfile.exists()) {
                 //Do something
                 images.add(im);
-
             }
         }
 
@@ -98,7 +115,6 @@ public class ShowListView extends AppCompatActivity{
         {
             Toast.makeText(getApplicationContext(),"No image found. Please take picture first.",Toast.LENGTH_SHORT);
         }
-        btnUpload = findViewById(R.id.btnUpload);
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,10 +127,82 @@ public class ShowListView extends AppCompatActivity{
         Log.d("321","size arraylist resultss " + images.size());
     }
 
+
+
+    private void sendImageInfo(){
+        Image im,im2 = new Image();
+        Retrofit retrofit2 = new Retrofit.Builder()
+                .baseUrl("http://192.168.43.244/TestLoginSaja2/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        ApiService service2 = retrofit2.create(ApiService.class);
+
+        ArrayList<Image> imglist = imghelper.getAllRelatedImages(subjectID,examcode);
+
+        JsonObject testjsn;
+        JsonObject testjsnparent = new JsonObject();
+        JsonArray testarr = new JsonArray();
+
+
+        int i = 0;
+        while(i<imglist.size()) {
+            im = imglist.get(i);
+            Log.d("json",im.getStudentID().toString());
+            testjsn = new JsonObject();
+            testjsn.addProperty("examcode", im.getExamcode());
+            testjsn.addProperty("studentID", im.getStudentID());
+            testjsn.addProperty("uri",im.getUri());
+            testjsn.addProperty("subjectID",im.getSubject_id());
+            testarr.add(testjsn);
+
+            i++;
+        }
+        im = imglist.get(0);
+        testjsnparent.addProperty("answer",im.getAnswer());
+        testjsnparent.add("details", testarr);
+        Call<JsonObject> call = service2.getUserValidity(testjsnparent);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
+
+            }
+        });
+
+
+        Log.d("json",testjsnparent.toString());
+
+        /*
+
+        {
+  "details": [
+    {
+      "examcode": "testexamcode",
+      "studentID": "Student ID",
+      "uri": "file:///storage/emulated/0/Pictures/OMR/OMR_1542382859077.jpg",
+      "subjectID": "testsubjectid"
+    },
+    {
+      "examcode": "testexamcode",
+      "studentID": "Student ID",
+      "uri": "file:///storage/emulated/0/Pictures/OMR/OMR_1542382859077.jpg",
+      "subjectID": "testsubjectid"
+    }
+  ]
+}
+         */
+
+    }
+
     private void uploadImagesToServer() {
+        sendImageInfo();
         if (true) {
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://192.168.43.244/TestUpload/")
+                    .baseUrl("http://192.168.43.244/TestLoginSaja2/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
@@ -136,12 +224,28 @@ public class ShowListView extends AppCompatActivity{
                 }
             }
             Log.d("checkimages",String.valueOf(parts.size()));
+
             // create a map of data to pass along
             RequestBody description = createPartFromString("www.androidlearning.com");
             RequestBody size = createPartFromString(""+parts.size());
 
+            List<String> all_id = new ArrayList<>();
+            all_id = imghelper.getAllStudentID();
+            StringBuilder builder = new StringBuilder();
+
+            for (String string : all_id) {
+                if (builder.length() > 0) {
+                    builder.append(" ");
+                }
+                builder.append(string);
+            }
+
+            String listID = builder.toString();
+
+            RequestBody listid = createPartFromString(listID);
+
             // finally, execute the request
-            Call<ResponseBody> call = service.uploadMultiple(description, size, parts);
+            Call<ResponseBody> call = service.uploadMultiple(description, size,listid, parts);
 
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
@@ -235,26 +339,6 @@ public class ShowListView extends AppCompatActivity{
         mProgressBar.setVisibility(View.GONE);
         btnUpload.setEnabled(true);
     }
-    private void showMessageOKCancel(DialogInterface.OnClickListener okListener) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(ShowListView.this);
-        final AlertDialog dialog = builder.setMessage("You need to grant access to Read External Storage")
-                .setPositiveButton("OK", okListener)
-                .setNegativeButton("Cancel", null)
-                .create();
-
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface arg0) {
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
-                        ContextCompat.getColor(ShowListView.this, android.R.color.holo_blue_light));
-                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(
-                        ContextCompat.getColor(ShowListView.this, android.R.color.holo_red_light));
-            }
-        });
-
-        dialog.show();
-
-    }
 
 }

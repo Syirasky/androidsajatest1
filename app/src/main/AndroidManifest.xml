@@ -34,9 +34,9 @@
         <activity android:name=".Edit" />
         <activity android:name=".MainForAll" />
         <activity android:name=".ExamDetailPage" />
-        <activity android:name=".ViewSubjects" />
         <activity android:name=".ViewResults" />
-        <activity android:name=".EnterExamInfo"></activity>
+        <activity android:name=".EnterExamInfo" />
+        <activity android:name=".resultdetail"></activity>
     </application>
 
 </manifest>

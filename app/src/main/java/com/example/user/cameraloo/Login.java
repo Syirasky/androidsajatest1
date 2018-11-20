@@ -169,6 +169,8 @@ public class Login extends AppCompatActivity {
         try {
             if (result.getString("success").equals("1")) {
                 name = editName.getText().toString();
+                if(email.length()>0)
+                    email = editEmail.getText().toString();
                 sharedP.loginUser(name);
                 displayMain();
             }
@@ -178,6 +180,7 @@ public class Login extends AppCompatActivity {
     }
     protected void displayMain(){
         //Log.d("displayMain","huhu");
+
         Intent mainPage = new Intent(Login.this,MainForAll.class);
         mainPage.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(mainPage);

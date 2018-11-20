@@ -115,6 +115,7 @@ public class ShowListView extends AppCompatActivity{
         {
             Toast.makeText(getApplicationContext(),"No image found. Please take picture first.",Toast.LENGTH_SHORT);
         }
+
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,7 +130,7 @@ public class ShowListView extends AppCompatActivity{
 
 
 
-    private void sendImageInfo(){
+    private void sendImageInfo(){ // json for student_score and examinfo is here
         Image im,im2 = new Image();
         Retrofit retrofit2 = new Retrofit.Builder()
                 .baseUrl("http://192.168.43.244/TestLoginSaja2/")
@@ -147,7 +148,7 @@ public class ShowListView extends AppCompatActivity{
         int i = 0;
         while(i<imglist.size()) {
             im = imglist.get(i);
-            Log.d("json",im.getStudentID().toString());
+
             testjsn = new JsonObject();
             testjsn.addProperty("examcode", im.getExamcode());
             testjsn.addProperty("studentID", im.getStudentID());

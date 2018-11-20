@@ -12,6 +12,8 @@ public class Image implements Parcelable{
     private String uri;
     @SerializedName("studentID")
     private String studentID;
+    @SerializedName("userID")
+    private String userID;
     @SerializedName("subject_id")
     private String subject_id;
     @SerializedName("answer")
@@ -23,13 +25,15 @@ public class Image implements Parcelable{
         examcode="";
         uri = "";
         studentID = "";
+        userID="";
         setSubject_id("");
         answer = "";
         score = "";
     }
-    public Image(String e,String st,String u,String si,String a,String sc){
+    public Image(String e,String st,String userid, String u,String si,String a,String sc){
         examcode = e;
         studentID = st;
+        userID = userid;
         uri = u;
         setSubject_id(si);
         answer = a;
@@ -111,5 +115,14 @@ public class Image implements Parcelable{
 
     public void setScore(String score) {
         this.score = score;
+    }
+
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 }

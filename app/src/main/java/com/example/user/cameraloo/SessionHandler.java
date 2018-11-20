@@ -34,6 +34,11 @@ public class SessionHandler {
 
         mEditor.commit();
     }
+    public String getUser(){
+        String name;
+        name = mPreferences.getString(KEY_USERNAME,"");
+        return name;
+    }
 
     /**
      * Checks whether user is logged in

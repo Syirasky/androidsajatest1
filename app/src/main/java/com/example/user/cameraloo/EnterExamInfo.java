@@ -13,6 +13,7 @@ public class EnterExamInfo extends AppCompatActivity {
     EditText txtExamCode;
     EditText txtSubjectID;
     EditText txtAnswer;
+    ImageDB imghelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

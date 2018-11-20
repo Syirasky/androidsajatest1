@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     Camera.ShutterCallback shutterCallback;
     Camera.PictureCallback jpegCallback;
     SessionHandler sharedP;
+    private String userid;
     ImageDB imghelper;
     private float RectLeft, RectTop,RectRight,RectBottom ;
     int  deviceHeight,deviceWidth;
@@ -95,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         {
             @Override
             public void onClick(View v){
+                imghelper.LogoutUser();
                 sharedP.logoutUser();
                 Intent i = new Intent(MainActivity.this, Login.class);
                 startActivity(i);
@@ -150,14 +152,18 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         if(requestCode==activity_viewimg_code)
         {
             if(resultCode==RESULT_OK) {
+                sharedP = new SessionHandler(getApplicationContext());
+                userid = sharedP.getUser();
                 studentID = data.getStringExtra("studentID");
                 uri = data.getStringExtra("uri");
                 Log.d("studentID", studentID);
                 img.setUri(uri);
                 img.setStudentID(studentID);
+                img.setUserID(userid);
                 img.setExamcode(Examcode);
                 img.setSubject_id(SubjectId);
                 img.setAnswer(answer);
+                img.setScore("0");
                 //score belum set
                 imghelper.addImg(img);
                 Log.d("321","database count"+ imghelper.numberOfRows());

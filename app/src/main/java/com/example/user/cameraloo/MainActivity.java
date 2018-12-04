@@ -51,9 +51,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private float RectLeft, RectTop,RectRight,RectBottom ;
     int  deviceHeight,deviceWidth;
     int activity_viewimg_code = 2;
-    String studentID,uri,SubjectId,Examcode,answer,score;
+    String studentID,uri,SubjectId,Examcode,answer,score,lecturerid;
     private static  final int FOCUS_AREA_SIZE= 300;
-    ImageInfo imginfo ;
+
     Image img;
     ArrayList<Image> a;
     @Override
@@ -65,6 +65,13 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         SubjectId = b.getStringExtra("subjectID");
         Examcode = b.getStringExtra("examcode");
         answer = b.getStringExtra("answer");
+        lecturerid = b.getStringExtra("lecturerid");
+        imghelper = new ImageDB(this);
+        ExamInfo ex = new ExamInfo(Examcode,SubjectId,lecturerid,answer);
+        Log.d("MainActivity debug obj",ex.getSubjectid2());
+        Log.d("MainActivity debug ",SubjectId);
+
+        imghelper.addExamInfo(ex);
 
         sharedP = new SessionHandler(getApplicationContext());
         btnLogout = findViewById(R.id.btnLogout);
@@ -74,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
 
-        imghelper = new ImageDB(this);
+
         img = new Image();
 
         a = new ArrayList<>();

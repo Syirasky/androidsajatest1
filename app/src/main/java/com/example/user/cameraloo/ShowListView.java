@@ -180,22 +180,23 @@ public class ShowListView extends AppCompatActivity{
         /*
 
         {
+  {
+  "answer": "ACBADCCADBDDDADDCCAD",
   "details": [
     {
-      "examcode": "testexamcode",
-      "studentID": "Student ID",
-      "uri": "file:///storage/emulated/0/Pictures/OMR/OMR_1542382859077.jpg",
-      "subjectID": "testsubjectid"
+      "examcode": "Sept18",
+      "studentID": "12012",
+      "uri": "file:///storage/emulated/0/Pictures/OMR/OMR_1543517306516.jpg",
+      "subjectID": "IOT"
     },
     {
-      "examcode": "testexamcode",
-      "studentID": "Student ID",
-      "uri": "file:///storage/emulated/0/Pictures/OMR/OMR_1542382859077.jpg",
-      "subjectID": "testsubjectid"
+      "examcode": "Sept18",
+      "studentID": "8338",
+      "uri": "file:///storage/emulated/0/Pictures/OMR/OMR_1543517333596.jpg",
+      "subjectID": "IOT"
     }
   ]
-}
-         */
+}*/
 
     }
 

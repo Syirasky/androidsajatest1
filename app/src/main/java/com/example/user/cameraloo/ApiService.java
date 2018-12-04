@@ -37,4 +37,7 @@ public interface ApiService {
     @POST("receiveInfoImage.php")
     Call<JsonObject> getUserValidity(
             @Body JsonObject imgdetails);
+
+    @POST("interfaceToDb.php")
+    Call<ResultFromDBHandler> fetchDbData();
 }

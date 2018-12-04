@@ -12,6 +12,12 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class ResultDetailAdapter extends ArrayAdapter<Image>{
     private ArrayList<Image> imlist;
     private Context cnt;
@@ -19,6 +25,7 @@ public class ResultDetailAdapter extends ArrayAdapter<Image>{
 
         TextView textStudentID;
         TextView textScore;
+
 
     }
 
@@ -50,11 +57,12 @@ public class ResultDetailAdapter extends ArrayAdapter<Image>{
         // set description text
         if (image.getUri()!=null) {
         //    Log.d("321", "ok kat imageadapter");
-            }else {
+            viewHolder.textScore.setText(image.getScore());
+            viewHolder.textStudentID.setText(image.getStudentID());
+
+        }else {
             //Log.d("321", "x ok kat imgadapter");
             }
-        viewHolder.textStudentID.setText(image.getStudentID());
-        viewHolder.textScore.setText(image.getScore());
 
 
         // Return the completed view to render on screen

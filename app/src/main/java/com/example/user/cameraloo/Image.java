@@ -20,6 +20,8 @@ public class Image implements Parcelable{
     private String answer;
     @SerializedName("score")
     private String score;
+    @SerializedName("examtaken")
+    private String taken;
 
     public Image(){
         examcode="";
@@ -124,5 +126,13 @@ public class Image implements Parcelable{
 
     public void setUserID(String userID) {
         this.userID = userID;
+    }
+
+    public String getTaken() {
+        return taken;
+    }
+
+    public void setTaken(String taken) {
+        this.taken = taken;
     }
 }

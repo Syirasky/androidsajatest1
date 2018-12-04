@@ -14,6 +14,8 @@ public class EnterExamInfo extends AppCompatActivity {
     EditText txtSubjectID;
     EditText txtAnswer;
     ImageDB imghelper;
+    private SessionHandler sharedP;
+    String userid;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,7 +25,8 @@ public class EnterExamInfo extends AppCompatActivity {
         txtSubjectID = findViewById(R.id.txtInSubjectID);
         btnNext = findViewById(R.id.btnNext);
         btnBack = findViewById(R.id.btnBack);
-
+        sharedP = new SessionHandler(getApplicationContext());
+        userid = sharedP.getUser();
         btnNext.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -35,6 +38,8 @@ public class EnterExamInfo extends AppCompatActivity {
                 a.putExtra("examcode",examcode);
                 a.putExtra("subjectID",subjectid);
                 a.putExtra("answer",answer);
+                a.putExtra("lecturerid",userid);
+
                 startActivity(a);
             }
         });

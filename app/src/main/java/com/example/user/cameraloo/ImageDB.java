@@ -12,7 +12,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 public class ImageDB extends  SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 6;
     private static final String DATABASE_NAME = "Image_DB";
 
 
@@ -28,6 +28,14 @@ public class ImageDB extends  SQLiteOpenHelper {
     private static final String user_id = "user_id";
     private static final String email = "email";
 
+
+    private static final String TABLE_EXAM = "exam";
+    private static final String examid = "examid";
+    private static final String exam_code2 = "exam_code2";
+    private static final String subject_id2 = "subject_id2";
+    private static final String lecturer_id = "lecturer_id";
+    private static final String answer2 = "answer";
+
     public ImageDB(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         //3rd argument to be passed is CursorFactory instance
@@ -36,9 +44,14 @@ public class ImageDB extends  SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String CREATE_IMAGE_TABLE = "CREATE TABLE " + TABLE + "("+ image_uri + " TEXT PRIMARY KEY," + student_id + " TEXT," + user_id + " TEXT,"  + exam_code + " TEXT," +  subject_id + " TEXT," + answer + " TEXT," + score + " TEXT"+")";
         String CREATE_USER_TABLE = "CREATE TABLE " + TABLEUSER + "("+ user_id + " TEXT PRIMARY KEY,"+ email + " TEXT"+")";
-
+        String CREATE_EXAM_TABLE = "CREATE TABLE exam ("+ exam_code2 +" UNIQUE,"
+                                                        + subject_id2 + " UNIQUE,"
+                                                        + lecturer_id + " ,"
+                                                        + answer2 + ""
+                                                        +")";
         db.execSQL(CREATE_IMAGE_TABLE);
         db.execSQL(CREATE_USER_TABLE);
+        db.execSQL(CREATE_EXAM_TABLE);
 
     }
 
@@ -47,6 +60,7 @@ public class ImageDB extends  SQLiteOpenHelper {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + TABLEUSER);
+        db.execSQL("DROP TABLE IF EXISTS "+ TABLE_EXAM);
         // Create tables again
         onCreate(db);
     }
@@ -65,6 +79,20 @@ public class ImageDB extends  SQLiteOpenHelper {
         values.put(score,img.getScore());
         // Inserting Row
         db.insert(TABLE, null, values);
+        //2nd argument is String containing nullColumnHack
+        db.close(); // Closing database connection
+    }
+    void addExamInfo(ExamInfo ex) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(exam_code2,ex.getExamcode2());
+        values.put(subject_id2,ex.getSubjectid2());
+        values.put(lecturer_id,ex.getLecturerid());
+        values.put(answer2,ex.getAnswer2());
+
+        // Inserting Row
+        db.insert(TABLE_EXAM, null, values);
         //2nd argument is String containing nullColumnHack
         db.close(); // Closing database connection
     }
@@ -99,6 +127,7 @@ public class ImageDB extends  SQLiteOpenHelper {
         // return contact
         return img;
     }
+
 
     public Image getSingle(String uri){
         SQLiteDatabase db = this.getReadableDatabase();
@@ -154,17 +183,41 @@ public class ImageDB extends  SQLiteOpenHelper {
         cv.put(student_id,stud_id);
 
         return db.update(TABLE, cv, image_uri+"= ?", new String[]{String.valueOf(uri)});
-    }
-    public int updateScore(String stud_id,String uri,String sc){
+
+    } public int updateScore(String stid,String subj, String exm, String sc){
 
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues cv = new ContentValues();
         cv.put(score,sc);
 
-        return db.update(TABLE, cv, image_uri+"= ?", new String[]{String.valueOf(uri)});
+        return db.update(TABLE, cv,
+                student_id+"= ? and " + subject_id + " = ? and "+ exam_code + " = ? ", new String[]{ String.valueOf(stid), String.valueOf(subj), String.valueOf(exm) });
+
     }
 
+   /* public void updateScore(String stud_id,String exmcode, String sb_id,String sc){
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put(score,"10");
+        String strSQL = "UPDATE image2 SET score = '"+sc+"'" +
+                " WHERE student_id = '"+ stud_id+"' and " +
+                        "subject_id ='"+sb_id+"' and "+
+                        "exam_code ='"+exmcode+"'";
+
+        db.execSQL(strSQL);
+     //  return db.update(TABLE, cv,student_id+"= ? AND "+exam_code+" = ? AND "+subject_id+"= ?"               , new String[]{stud_id,exmcode,sb_id});
+    }*/
+
+ /*   private static final String image_uri = "image_uri";
+    private static final String student_id = "student_id";
+    private static final String exam_code = "exam_code";
+    private static final String subject_id = "subject_id";
+    private static final String answer = "answer";
+    private static final String score = "score";
+*/
 
     // code to get all contacts in a list view
     public ArrayList<Image> getAllImages() {
@@ -254,6 +307,32 @@ public class ImageDB extends  SQLiteOpenHelper {
         return imageList;
     }
     // code to get all contacts in a list view
+    public ArrayList<ExamInfo> getRelatedExamInfo(String lec_id) {
+        ArrayList<ExamInfo> ExamList = new ArrayList<ExamInfo>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + TABLE_EXAM + " WHERE lecturer_id ='"+lec_id+"'";
+        Log.d("sql",selectQuery);
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                ExamInfo exm = new ExamInfo();
+                exm.setExamcode2(cursor.getString(0));
+                exm.setSubjectid2(cursor.getString(1));
+                exm.setLecturerid(cursor.getString(2));
+                exm.setAnswer2(cursor.getString(3));
+
+                // Adding contact to list
+                ExamList.add(exm);
+            } while (cursor.moveToNext());
+        }
+
+        // return contact list
+        return ExamList;
+    }
+    // code to get all contacts in a list view
     public ArrayList<Uri> getAllUri() {
         ArrayList<Image> imageList = new ArrayList<Image>();
         ArrayList<Uri> imguri = new ArrayList<>();
@@ -326,6 +405,7 @@ public class ImageDB extends  SQLiteOpenHelper {
         // return contact list
         return imageList;
     }
+
 
 
 

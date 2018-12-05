@@ -120,6 +120,7 @@ public class ShowListView extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 uploadImagesToServer();
+
             }
         });
 
@@ -140,64 +141,68 @@ public class ShowListView extends AppCompatActivity{
 
         ArrayList<Image> imglist = imghelper.getAllRelatedImages(subjectID,examcode);
 
-        JsonObject testjsn;
-        JsonObject testjsnparent = new JsonObject();
-        JsonArray testarr = new JsonArray();
+            if(imglist.size()>0) {
+                JsonObject testjsn;
+                JsonObject testjsnparent = new JsonObject();
+                JsonArray testarr = new JsonArray();
 
 
-        int i = 0;
-        while(i<imglist.size()) {
-            im = imglist.get(i);
+                int i = 0;
+                while (i < imglist.size()) {
+                    im = imglist.get(i);
 
-            testjsn = new JsonObject();
-            testjsn.addProperty("examcode", im.getExamcode());
-            testjsn.addProperty("studentID", im.getStudentID());
-            testjsn.addProperty("uri",im.getUri());
-            testjsn.addProperty("subjectID",im.getSubject_id());
-            testarr.add(testjsn);
+                    testjsn = new JsonObject();
+                    testjsn.addProperty("examcode", im.getExamcode());
+                    testjsn.addProperty("studentID", im.getStudentID());
+                    testjsn.addProperty("uri", im.getUri());
+                    testjsn.addProperty("subjectID", im.getSubject_id());
+                    testarr.add(testjsn);
 
-            i++;
-        }
-        im = imglist.get(0);
-        testjsnparent.addProperty("answer",im.getAnswer());
-        testjsnparent.add("details", testarr);
-        Call<JsonObject> call = service2.getUserValidity(testjsnparent);
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
+                    i++;
+                }
+                im = imglist.get(0);
+                testjsnparent.addProperty("answer", im.getAnswer());
+                testjsnparent.add("details", testarr);
+                Call<JsonObject> call = service2.getUserValidity(testjsnparent);
+                call.enqueue(new Callback<JsonObject>() {
+                    @Override
+                    public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
 
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
+
+                    }
+                });
+
+
+                Log.d("json", testjsnparent.toString());
+
+                /*
+
+                {
+          {
+          "answer": "ACBADCCADBDDDADDCCAD",
+          "details": [
+            {
+              "examcode": "Sept18",
+              "studentID": "12012",
+              "uri": "file:///storage/emulated/0/Pictures/OMR/OMR_1543517306516.jpg",
+              "subjectID": "IOT"
+            },
+            {
+              "examcode": "Sept18",
+              "studentID": "8338",
+              "uri": "file:///storage/emulated/0/Pictures/OMR/OMR_1543517333596.jpg",
+              "subjectID": "IOT"
             }
-
-            @Override
-            public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
-
+          ]
+        }*/
             }
-        });
-
-
-        Log.d("json",testjsnparent.toString());
-
-        /*
-
-        {
-  {
-  "answer": "ACBADCCADBDDDADDCCAD",
-  "details": [
-    {
-      "examcode": "Sept18",
-      "studentID": "12012",
-      "uri": "file:///storage/emulated/0/Pictures/OMR/OMR_1543517306516.jpg",
-      "subjectID": "IOT"
-    },
-    {
-      "examcode": "Sept18",
-      "studentID": "8338",
-      "uri": "file:///storage/emulated/0/Pictures/OMR/OMR_1543517333596.jpg",
-      "subjectID": "IOT"
-    }
-  ]
-}*/
-
+            else{
+                Toast.makeText(ShowListView.this,"No Images",Toast.LENGTH_SHORT).show();
+            }
     }
 
     private void uploadImagesToServer() {
@@ -246,33 +251,41 @@ public class ShowListView extends AppCompatActivity{
 
             RequestBody listid = createPartFromString(listID);
 
-            // finally, execute the request
-            Call<ResponseBody> call = service.uploadMultiple(description, size,listid, parts);
+            if(all_id.size()>0){
+                // finally, execute the request
+                Call<ResponseBody> call = service.uploadMultiple(description, size,listid, parts);
 
-            call.enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                    hideProgress();
-                    if(response.isSuccessful()) {
-                        Toast.makeText(ShowListView.this,
-                                "Images successfully uploaded!", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Snackbar.make(parentView, R.string.string_some_thing_wrong, Snackbar.LENGTH_LONG).show();
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                        hideProgress();
+                        if(response.isSuccessful()) {
+                            Toast.makeText(ShowListView.this,
+                                    "Images successfully uploaded!", Toast.LENGTH_SHORT).show();
+                            Intent a = new Intent(ShowListView.this,MainForAll.class);
+                            startActivity(a);
+                        } else {
+                            Snackbar.make(parentView, R.string.string_some_thing_wrong, Snackbar.LENGTH_LONG).show();
+                        }
                     }
-                }
 
-                @Override
-                public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                    @Override
+                    public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                        hideProgress();
+                        Snackbar.make(parentView, t.getMessage(), Snackbar.LENGTH_LONG).show();
+                    }
+                });
+
+                }
+                else {
                     hideProgress();
-                    Snackbar.make(parentView, t.getMessage(), Snackbar.LENGTH_LONG).show();
+                    Toast.makeText(ShowListView.this,
+                            R.string.string_internet_connection_not_available, Toast.LENGTH_SHORT).show();
                 }
-            });
+            }else {
+            Toast.makeText(ShowListView.this,"Please take photos first!",Toast.LENGTH_SHORT).show();
+            }
 
-        } else {
-            hideProgress();
-            Toast.makeText(ShowListView.this,
-                    R.string.string_internet_connection_not_available, Toast.LENGTH_SHORT).show();
-        }
     }
 
 

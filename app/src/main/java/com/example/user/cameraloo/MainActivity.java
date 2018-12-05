@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     Camera camera;
     SurfaceView surfaceView,transparentView;
     SurfaceHolder surfaceHolder,transparentHolder;
-    Button capture,btnLogout,btnViewImg;
+    Button capture,btnViewImg;
     Camera.PictureCallback rawCallback;
     Camera.ShutterCallback shutterCallback;
     Camera.PictureCallback jpegCallback;
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         imghelper.addExamInfo(ex);
 
         sharedP = new SessionHandler(getApplicationContext());
-        btnLogout = findViewById(R.id.btnLogout);
+
         capture = findViewById(R.id.button2);
         btnViewImg = findViewById(R.id.btnViewImg);
         surfaceView = findViewById(R.id.surfaceView3);
@@ -99,17 +99,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
         storageStuff();
 
-        btnLogout.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v){
-                imghelper.LogoutUser();
-                sharedP.logoutUser();
-                Intent i = new Intent(MainActivity.this, Login.class);
-                startActivity(i);
-                finish();
-            }
-        });
+
         btnViewImg.setOnClickListener(new View.OnClickListener()
         {
             @Override

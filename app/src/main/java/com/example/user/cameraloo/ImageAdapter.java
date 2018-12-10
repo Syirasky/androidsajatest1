@@ -122,6 +122,7 @@ public class ImageAdapter extends ArrayAdapter<Image>{
             imlist.remove(position);
             notifyDataSetChanged();
 
+
             }
         });
         return convertView;

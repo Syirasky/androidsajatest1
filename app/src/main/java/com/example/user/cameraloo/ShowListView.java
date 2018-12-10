@@ -206,7 +206,7 @@ public class ShowListView extends AppCompatActivity{
     }
 
     private void uploadImagesToServer() {
-        sendImageInfo();
+
         if (true) {
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl("http://192.168.43.244/TestLoginSaja2/")
@@ -262,6 +262,7 @@ public class ShowListView extends AppCompatActivity{
                         if(response.isSuccessful()) {
                             Toast.makeText(ShowListView.this,
                                     "Images successfully uploaded!", Toast.LENGTH_SHORT).show();
+
                             Intent a = new Intent(ShowListView.this,MainForAll.class);
                             startActivity(a);
                         } else {
@@ -285,7 +286,7 @@ public class ShowListView extends AppCompatActivity{
             }else {
             Toast.makeText(ShowListView.this,"Please take photos first!",Toast.LENGTH_SHORT).show();
             }
-
+        sendImageInfo();
     }
 
 

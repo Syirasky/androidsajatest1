@@ -93,7 +93,7 @@ public class ViewResults extends AppCompatActivity {
                         im = imglist.get(i);
                         Log.d("results","Score "+im.getScore()+"Student id "+im.getStudentID()+" Examcode "+im.getExamcode() + "Subject ID "+ im.getSubject_id());
 
-
+                        Toast.makeText(getApplicationContext(),"Result Fetched Successfully.",Toast.LENGTH_SHORT);
                         imghelper.updateScore(im.getStudentID(),im.getSubject_id(),im.getExamcode(),im.getScore());
                     }
                 }else{
@@ -103,6 +103,7 @@ public class ViewResults extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResultFromDBHandler> call, Throwable t) {
+                Toast.makeText(getApplicationContext(),"Error Getting Results.",Toast.LENGTH_SHORT);
 
             }
         });

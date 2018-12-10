@@ -68,8 +68,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         lecturerid = b.getStringExtra("lecturerid");
         imghelper = new ImageDB(this);
         ExamInfo ex = new ExamInfo(Examcode,SubjectId,lecturerid,answer);
-        Log.d("MainActivity debug obj",ex.getSubjectid2());
-        Log.d("MainActivity debug ",SubjectId);
+       // Log.d("MainActivity debug obj",ex.getSubjectid2());
+       // Log.d("MainActivity debug ",SubjectId);
 
         imghelper.addExamInfo(ex);
 
@@ -244,16 +244,16 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     public void Draw()
     {
         Canvas canvas = transparentHolder.lockCanvas();
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(Color.GREEN);
-        paint.setStrokeWidth(3);
+      //  Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+     //   paint.setStyle(Paint.Style.STROKE);
+      //  paint.setColor(Color.GREEN);
+     //   paint.setStrokeWidth(3);
         Bitmap guiderect = BitmapFactory.decodeResource(getResources(),R.drawable.guidepls3);
         RectTop = 20;
         RectLeft = 90;
         RectRight = deviceWidth - 90;
-        Rect rec = new Rect();
-        int i = 0;
+      //  Rect rec = new Rect();
+        //int i = 0;
         /**while(i<15){
 
             RectBottom =RectTop+ 50;
@@ -264,9 +264,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             RectTop = RectBottom; //now bottom is top for another box
             i++;
         }**/
-        Log.d("sizescw","hehe");
-        Log.d("hehe",Integer.toString(deviceWidth));
-        Log.d("hehe",Integer.toString(deviceHeight));
+       // Log.d("sizescw","hehe");
+      //  Log.d("hehe",Integer.toString(deviceWidth));
+     //   Log.d("hehe",Integer.toString(deviceHeight));
 
         canvas.drawBitmap(guiderect,100,50,null);
         transparentHolder.unlockCanvasAndPost(canvas);
@@ -312,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         param.setPreviewSize(352,288);
         param.setRotation(90);
         param.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-        List<Camera.Size> sizes = param.getSupportedPictureSizes();
+        //List<Camera.Size> sizes = param.getSupportedPictureSizes();
 
 
         // Iterate through all available resolutions and choose one.

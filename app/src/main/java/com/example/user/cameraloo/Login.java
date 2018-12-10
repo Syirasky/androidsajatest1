@@ -33,7 +33,7 @@ public class Login extends AppCompatActivity {
     EditText editEmail, editPassword, editName;
     Button btnSignIn, btnRegister;
 
-    String URL= "http://3.0.101.196/SimpleLoginUpload/index.php";
+    String URL= "http://192.168.43.244/TestLoginSaja2/index.php";
     SessionHandler sharedP;
 
     JSONParser jsonParser=new JSONParser();

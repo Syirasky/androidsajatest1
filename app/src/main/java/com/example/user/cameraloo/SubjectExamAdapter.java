@@ -1,5 +1,6 @@
 package com.example.user.cameraloo;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -21,11 +22,13 @@ import java.util.ArrayList;
 public class SubjectExamAdapter extends ArrayAdapter<ExamInfo>{
     private ArrayList<ExamInfo> exmlist;
     private Context cnt;
+    ImageDB dbhelper;
     private static class ViewHolder {
 
         TextView examcode;
         TextView subjectid;
-        Button btnviewresult;
+        Button btnviewresult,btnDelete;
+
     }
 
     public SubjectExamAdapter(Context context, ArrayList<ExamInfo> exm) {
@@ -48,6 +51,7 @@ public class SubjectExamAdapter extends ArrayAdapter<ExamInfo>{
             viewHolder.examcode = convertView.findViewById(R.id.txtECode);
             viewHolder.subjectid = convertView.findViewById(R.id.txtSubID);
             viewHolder.btnviewresult = convertView.findViewById(R.id.btnResult);
+            viewHolder.btnDelete = convertView.findViewById(R.id.btnDelete);
             convertView.setTag(viewHolder);
 
         } else {
@@ -78,6 +82,27 @@ public class SubjectExamAdapter extends ArrayAdapter<ExamInfo>{
                 getContext().startActivity(viewResults);
 
                 Log.d("results","ado jh ni");
+            }
+        });
+
+        //delete btn
+        viewHolder.btnDelete.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                dbhelper =  new ImageDB(getContext());
+                ExamInfo em = getItem(position);
+                dbhelper.deleteExamInfo(em.getExamcode2(),em.getSubjectid2(),em.getLecturerid());
+                ArrayList<ExamInfo> ei = new ArrayList<>();
+                ei = dbhelper.getAllExamInfo();
+                SubjectExamAdapter sea = new SubjectExamAdapter(getContext(),ei);
+
+                Intent a = new Intent(getContext(),ViewResults.class);
+                getContext().startActivity(a);
+                ((Activity)getContext()).finish();
+                sea.notifyDataSetInvalidated();
+                sea.refreshView();
+
+                Toast.makeText(getContext(),"Exam Batch Deleted",Toast.LENGTH_SHORT).show();
             }
         });
 
